@@ -2,7 +2,7 @@ library(plyr)
 library(readr)
 
 # set up workspace
-setwd("G:/CoStar2019/")
+setwd("G:/")
 
 # obtain Properties List from folder names
 PT <- list.dirs(path = ".", full.names = FALSE, recursive = TRUE)
