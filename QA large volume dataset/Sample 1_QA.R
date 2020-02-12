@@ -3,6 +3,7 @@
 #11/20/2019
 
 
+
 ### initialize the work environment ###
 #set up workspace
 maindir = dirname(rstudioapi::getSourceEditorContext()$path)
@@ -31,15 +32,14 @@ end_time <- Sys.time()
 
 ### loading data ###
 #import database_data (2012-2016)
-channel <- odbcDriverConnect('driver={SQL Server}; server=socioeca8; database=dpoe_stage; trusted_connection=true')
-# sql_query <- getSQL("../CTPP ETL 2012-2016.sql")
-sql_query <- getSQL("C:/Users/jyen/Documents/DPOE/CTPP/2012-2016/QAQC/Query/CTPP ETL 2012-2016.sql")
+channel <- odbcDriverConnect('driver={SQL Server}; server=socioeca; database=socioec_data; trusted_connection=true')
+# sql_query <- getSQL("../CTPP.sql")
+sql_query <- getSQL("../Queries/CTPP.sql")
 database_data <- sqlQuery(channel,sql_query,stringsAsFactors = FALSE)
 odbcClose(channel)
 
-
-#import source_data (2012-2016)
-setwd("D:/DPOE/CTPP/")
+#import source_data
+setwd("D:/CTPP/")
 file_names <- dir(path = ".", pattern = ".csv") #where you have your files
 source_data <- do.call(rbind,lapply(file_names,fread)) #use data.table to batching reading large number of csv files
 source_data <- as.data.frame(source_data)
@@ -84,18 +84,6 @@ all(source_data == database_data) #chekc cell values only
 all.equal(source_data, database_data) #chekc cell values and data types and will return the conflicted cells
 identical(source_data, database_data) #chekc cell values and data types
 which(source_data!=database_data, arr.ind = TRUE) #which command shows exactly which columns are incorrect
-
-# compare files by columns (i.e., geo_id, tbl_id, line_num)
-all(source_data[1:3] == database_data[1:3]) #chekc cell values only
-all.equal(source_data[1:3], database_data[1:3]) #chekc cell values and data types and will return the conflicted cells
-identical(source_data[1:3], database_data[1:3]) #chekc cell values and data types
-which(source_data[1:3]!=database_data[1:3], arr.ind = TRUE) #which command shows exactly which columns are incorrect
-
-# compare files by columns (i.e., moe)
-all(source_data[5] == database_data[5]) #chekc cell values only
-all.equal(source_data[5], database_data[5]) #chekc cell values and data types and will return the conflicted cells
-identical(source_data[5], database_data[5]) #chekc cell values and data types
-which(source_data[5]!=database_data[5], arr.ind = TRUE) #which command shows exactly which columns are incorrect
 
 ### display running time of R code ###
 end_time - start_time

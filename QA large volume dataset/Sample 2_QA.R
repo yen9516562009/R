@@ -2,6 +2,8 @@
 #Jeff Yen
 #11/20/2019
 
+
+
 #Set up workspace
 maindir = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(maindir)
@@ -22,18 +24,20 @@ sleep_for_a_minute <- function() { Sys.sleep(60) }
 start_time <- Sys.time()
 
 #Import Database Data
-channel <- odbcDriverConnect('driver={SQL Server}; server=socioeca8; database=socioec_data_stage; trusted_connection=true')
-sql_query <- getSQL("../Queries/import_lodes74_od.sql")
+channel <- odbcDriverConnect('driver={SQL Server}; server=socioec; database=socioec_data; trusted_connection=true')
+sql_query <- getSQL("../Queries/import_lodes.sql")
 database_data <- sqlQuery(channel,sql_query,stringsAsFactors = FALSE)
 odbcClose(channel)
 gc() #release memory
 
-###Import Source Data###
-setwd("D:/DPOE/LEHD LODES/")
+
+
+####Import Source Data####
+setwd("D:/LEHD/")
 file_names <- dir(path = ".", pattern = ".csv")
 s <- lapply(file_names, fread) #append each csv into a list
 
-#and fliter it by w_geocode = "6073"
+#and fliter it by w_geocode = "6073" (San Diego)
 new_s = list()
 k = 1
 for (i in s){
@@ -57,8 +61,9 @@ source_data <- as.data.frame(do.call(rbind, new_s)) # or do in this way: source_
 str(database_data)
 str(source_data)
 
-#-------------------------------------------------------------------#
-#########Clean Data#########
+
+
+####Clean Data####
 #Remove unnecessary columns from databased_data and source_data
 database_data$type <- NULL
 database_data$yr <- NULL
@@ -90,7 +95,8 @@ gc() #release memory
 rownames(source_data) <-NULL
 rownames(database_data) <-NULL
 
-#-----------------------------------------------------------------------#
+
+
 ####Check Data Types and Values####
 #Check data types
 str(database_data)
